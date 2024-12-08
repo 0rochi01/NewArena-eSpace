@@ -41,19 +41,18 @@ public class ArenaESpaceSistem {
     }
 
     public static void executaMenuPrincipal(GestaoAdmin gerirAdmin, GestaoUtilizador gerirUtilizador, Criptografia criptografia) {
-        try (Scanner scanner = new Scanner(System.in)) {
-            OpcaoMenu1 opcaoSelecionada;
-            do {
-                opcaoSelecionada = mostrarMenuEDevolverOpcaoSelecionada(scanner);
+        Scanner scanner = new Scanner(System.in);
+        OpcaoMenu1 opcaoSelecionada;
 
-                switch (opcaoSelecionada) {
-                    case LOGIN -> realizarLogin(scanner, gerirAdmin, gerirUtilizador, criptografia);
-                    case REGISTO -> Utilizador.cadastroDeUtilizador(gerirUtilizador);
-                    case SAIR -> System.out.println("Encerrando o sistema.... Até logo!!");
-                    default -> System.out.println("Opção inválida. Tente novamente.");
-                }
-            } while (opcaoSelecionada != OpcaoMenu1.SAIR);
-        }
+        do {
+            opcaoSelecionada = mostrarMenuEDevolverOpcaoSelecionada(scanner);
+
+            switch (opcaoSelecionada) {
+                case LOGIN -> realizarLogin(scanner, gerirAdmin, gerirUtilizador, criptografia);
+                case REGISTO -> Utilizador.cadastroDeUtilizador(gerirUtilizador);
+                case SAIR -> System.out.println("Encerrando o sistema. Até logo!");
+            }
+        } while (opcaoSelecionada != OpcaoMenu1.SAIR);
     }
 
     private static void realizarLogin(Scanner scanner, GestaoAdmin gerirAdmin, GestaoUtilizador gerirUtilizador, Criptografia criptografia) {
@@ -65,12 +64,14 @@ public class ArenaESpaceSistem {
         String senha = scanner.nextLine();
 
         // Verificar se é um administrador
-        /*Admin admin = gerirAdmin.carregarAdmin();
+        Admin admin = gerirAdmin.carregarAdmin();
         if (admin != null && nomeDeUtilizador.equals(admin.getNomeDeUtilizador())
                 && criptografia.verificarSenha(senha, admin.getPassword())) {
             System.out.println("Bem-vindo, administrador!");
+            // Chama o método exibirMenuAdmin para o administrador
+            admin.exibirMenuAdmin(gerirUtilizador);
             return;
-        }*/
+        }
 
         // Verificar se é um utilizador
         Utilizador utilizador = gerirUtilizador.procurarUtilizador(nomeDeUtilizador, senha);

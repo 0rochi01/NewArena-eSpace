@@ -64,7 +64,6 @@ public class GestaoUtilizador {
                 // Adicionar o utilizador à lista
                 utilizadores.add(utilizador);
             }
-
             System.out.println("Utilizadores carregados com sucesso!");
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException("Erro ao carregar utilizadores do arquivo: " + e.getMessage());
@@ -81,4 +80,75 @@ public class GestaoUtilizador {
         }
         return null;
     }
+    
+    public List<Promotor> listarPromotores() {
+        List<Promotor> promotores = new ArrayList<>();
+        for (Utilizador utilizador : utilizadores) {
+            if (utilizador instanceof Promotor promotor) {
+                promotores.add(promotor);
+            }
+        }
+        return promotores;
+    }
+    
+    
+    // Método para procurar promotor por nome
+    public Promotor procurarPromotorPorNome(String nome) {
+        // Itera sobre a lista de promotores e verifica se algum possui o nome informado
+        for (Promotor promotor : listarPromotores()) {
+            if (promotor.getNomeDeUtilizador().equals(nome)) {
+                return promotor; // Retorna o promotor encontrado
+            }
+        }
+        return null; // Retorna null se nenhum promotor for encontrado com o nome informado
+    }
+    
+    
+    public void editarPromotor(String nomeDeUtilizador, String novoEmail, String novaSenha) {
+        carregarUtilizadores(); // Atualiza a lista com os dados do arquivo
+        for (Utilizador utilizador : utilizadores) {
+            if (utilizador instanceof Promotor && utilizador.getNomeDeUtilizador().equals(nomeDeUtilizador)) {
+                utilizador.setEmail(novoEmail, criptografia);
+                utilizador.setPassword(criptografia.gerarHashDeSenha(novaSenha));
+                salvarTodosUtilizadores();
+                System.out.println("Promotor atualizado com sucesso.");
+                return;
+            }
+        }
+        System.out.println("Promotor não encontrado.");
+    }
+    
+    public void excluirPromotor(String nomeDeUtilizador) {
+        carregarUtilizadores(); // Atualiza a lista com os dados do arquivo
+        Utilizador promotorParaRemover = null;
+        for (Utilizador utilizador : utilizadores) {
+            if (utilizador instanceof Promotor && utilizador.getNomeDeUtilizador().equals(nomeDeUtilizador)) {
+                promotorParaRemover = utilizador;
+                break;
+            }
+        }
+        if (promotorParaRemover != null) {
+            utilizadores.remove(promotorParaRemover);
+            salvarTodosUtilizadores();
+            System.out.println("Promotor removido com sucesso.");
+        } else {
+            System.out.println("Promotor não encontrado.");
+        }
+    }
+    
+    private void salvarTodosUtilizadores() {
+        try (FileOutputStream fos = new FileOutputStream(ARQUIVO_UTILIZADORES)) {
+            for (Utilizador utilizador : utilizadores) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+                    oos.writeObject(utilizador);
+                }
+                String dadosCriptografados = criptografia.criptografar(Base64.getEncoder().encodeToString(baos.toByteArray()));
+                fos.write((dadosCriptografados + System.lineSeparator()).getBytes());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao salvar todos os utilizadores no arquivo: " + e.getMessage());
+        }
+    }
+    
 }

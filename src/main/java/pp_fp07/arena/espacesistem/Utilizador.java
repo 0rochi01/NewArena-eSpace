@@ -49,10 +49,6 @@ public class Utilizador {
         return nomeDeUtilizador;
     }
 
-    public void setNomeDeUtilizador(String nomeDeUtilizador) {
-        this.nomeDeUtilizador = nomeDeUtilizador;
-    }
-
     public String getEmail(Criptografia criptografia) {
         return criptografia.descriptografar(email); // Retorna o e-mail descriptografado
     }
